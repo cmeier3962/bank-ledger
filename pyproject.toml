@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bank-ledger"
+version = "0.1.0"
+description = "A minimal Python package for a simple bank ledger with Account, Transaction, and Ledger."
+authors = [
+  { name = "Chris Meier" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

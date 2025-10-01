@@ -5,21 +5,17 @@ A minimal Python package for a simple bank ledger with `Account`, `Transaction`,
 - No CI, no hooks — just code you can run locally.
 - Library code lives in `src/bank_ledger/`.
 - Handy scripts live in `scripts/`.
+- Installed in **editable mode** automatically via `requirements.txt`.
 
 ## Requirements
 
-- Python 3.11+ (3.12 works too)
-- (Optional) `make` if you want the Makefile shortcuts (Git Bash on Windows has it)
+- Python 3.11+ (3.12/3.13 OK)
 
-## Setup
+## Setup (one-time per machine)
 
 ```bash
-# from repo root
+# from the repo root
 python -m venv .venv
-
-# Windows (PowerShell)
 . .\.venv\Scripts\Activate.ps1
-# macOS/Linux
-# source .venv/bin/activate
-
+python -m pip install --upgrade pip
 pip install -r requirements.txt
