@@ -16,7 +16,7 @@ bank-ledger/
 │     ├─ __main__.py
 │     ├─ account.py
 │     ├─ ledger.py
-│     └─ transactions.py
+│     └─ transaction.py
 ├─ scripts/
 │  └─ smoke_test.py
 ├─ .gitignore
