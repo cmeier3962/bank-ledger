@@ -1,4 +1,4 @@
-# your-project
+# Bank-Ledger
 
 Quickstart
 
@@ -11,9 +11,9 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # run a script
-$env:PYTHONPATH="src"; python scripts/demo.py   # Windows PowerShell
+$env:PYTHONPATH="src"; python scripts/smoke_test.py   # Windows PowerShell
 # or
-PYTHONPATH=src python scripts/demo.py           # macOS/Linux
+PYTHONPATH=src python scripts/smoke_test.py           # macOS/Linux
 
 # run as module (if using __main__.py)
-$env:PYTHONPATH="src"; python -m your_project
+$env:PYTHONPATH="src"; python -m bank_ledger
