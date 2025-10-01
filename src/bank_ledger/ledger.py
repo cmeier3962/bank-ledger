@@ -1,6 +1,8 @@
 from __future__ import annotations
 from .transaction import Transaction
 from .account import Account
+from datetime import datetime, UTC
+from uuid import uuid4
 
 
 class Ledger:
@@ -50,3 +52,41 @@ class Ledger:
             raise ValueError("Transaction amount cannot be zero")
 
         self.transactions.append(tx)
+    
+    def deposit(self, account_id: str, amount: int | float) -> Transaction:
+        """
+        Creates a transaction and passes it into the record_transaction method which:
+        - Verifies if an account_id has an active account
+        - Determines whether to deposit or withdraw the amount by its value
+        - Adds the transaction to the transaction list
+        """
+        if amount <= 0:
+            raise ValueError("Amount cannot be zero or negative")
+        
+        trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=amount, timestamp=datetime.now(UTC))
+        self.record_transaction(trxn)
+        
+        return trxn
+        
+    def withdraw(self, account_id: str, amount: int | float) -> Transaction:
+        """
+        Creates a transaction and converts amount to negative before passes it into the record_transaction method which:
+        - Verifies if an account_id has an active account
+        - Determines whether to deposit or withdraw the amount by its value
+        - Adds the transaction to the transaction list
+        """ 
+        if amount <= 0:
+            raise ValueError("Amount cannot be zero or negative")
+        
+        trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=-amount, timestamp=datetime.now(UTC))
+        self.record_transaction(trxn)
+        
+        return trxn
+    
+    def balance(self, account_id: str) -> int | float:
+        """Returns account balance if the account exists"""
+        account = self.get_account(account_id)
+        if account is None:
+            raise ValueError(f"Account {account_id} does not exist")
+        
+        return account.balance
