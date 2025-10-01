@@ -2,9 +2,9 @@
 
 A minimal Python package for a simple bank ledger with `Account`, `Transaction`, and `Ledger`.
 
-- Library code lives in `src/bank_ledger/`.
-- Handy scripts live in `scripts/`.
-- Installed in **editable mode** automatically via `requirements.txt`.
+- Library code lives in `src/bank_ledger/`
+- Handy scripts live in `scripts/`
+- Installed locally in **editable mode** via `requirements.txt` (contains `-e .`)
 
 ## Repo layout
 
