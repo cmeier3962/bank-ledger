@@ -61,7 +61,7 @@ class Ledger:
         - Adds the transaction to the transaction list
         """
         if amount <= 0:
-            raise ValueError("Amount cannot be zero or negative")
+            raise ValueError("Amount must be positive")
         
         trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=amount, timestamp=datetime.now(UTC))
         self.record_transaction(trxn)
@@ -76,7 +76,7 @@ class Ledger:
         - Adds the transaction to the transaction list
         """ 
         if amount <= 0:
-            raise ValueError("Amount cannot be zero or negative")
+            raise ValueError("Amount must be positive")
         
         trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=-amount, timestamp=datetime.now(UTC))
         self.record_transaction(trxn)
@@ -90,3 +90,19 @@ class Ledger:
             raise ValueError(f"Account {account_id} does not exist")
         
         return account.balance
+    
+    def transfer(self, from_id: str, to_id: str, amount: int | float) -> tuple[Transaction, Transaction]:
+        """Transfer a positive amount from one account to another; returns (withdraw_tx, deposit_tx)."""
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
+        if from_id == to_id:
+            raise ValueError("Source and destination must be different")
+        if self.get_account(from_id) is None:
+            raise ValueError(f"Account '{from_id}' does not exist")
+        if self.get_account(to_id) is None:
+            raise ValueError(f"Account '{to_id}' does not exist")
+        
+        from_trxn = self.withdraw(from_id, amount)
+        to_trxn = self.deposit(to_id, amount)
+        
+        return (from_trxn, to_trxn)
