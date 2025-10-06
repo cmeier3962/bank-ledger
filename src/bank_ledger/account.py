@@ -21,3 +21,6 @@ class Account:
         if amount > self.balance:
             raise ValueError("Insufficient funds")
         self.balance -= amount
+        
+    def __repr__(self) -> str:
+        return f"Account(id={self.id!r}, name={self.name!r}, balance={self.balance})"

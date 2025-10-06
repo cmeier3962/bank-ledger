@@ -106,3 +106,6 @@ class Ledger:
         to_trxn = self.deposit(to_id, amount)
         
         return (from_trxn, to_trxn)
+    
+    def __repr__(self) -> str:
+        return f"Ledger(accounts={len(self._accounts)}, transactions={len(self.transactions)})"
