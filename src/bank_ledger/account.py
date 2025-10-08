@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .errors import InvalidAmountError, InsufficientFundsError
 
 
 class Account:
@@ -11,15 +12,15 @@ class Account:
     def deposit(self, amount: int | float) -> None:
         """Deposit a positive amount into the account."""
         if amount <= 0:
-            raise ValueError("Cannot deposit zero dollars or a negative amount")
+            raise InvalidAmountError("Cannot deposit zero dollars or a negative amount")
         self.balance += amount
 
     def withdraw(self, amount: int | float) -> None:
         """Withdraw a positive amount from the account (no overdrafts)."""
         if amount <= 0:
-            raise ValueError("Cannot withdraw zero dollars or a negative amount")
+            raise InvalidAmountError("Cannot withdraw zero dollars or a negative amount")
         if amount > self.balance:
-            raise ValueError("Insufficient funds")
+            raise InsufficientFundsError("Insufficient funds")
         self.balance -= amount
         
     def __repr__(self) -> str:

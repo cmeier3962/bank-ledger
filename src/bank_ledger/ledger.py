@@ -1,6 +1,7 @@
 from __future__ import annotations
 from .transaction import Transaction
 from .account import Account
+from .errors import AccountNotFoundError, InvalidAmountError
 from datetime import datetime, UTC
 from uuid import uuid4
 
@@ -39,7 +40,7 @@ class Ledger:
         Positive tx.amount => deposit; negative => withdraw; zero => error.
         """
         if not self.has_account(tx.account_id):
-            raise ValueError(f"Account '{tx.account_id}' does not exist")
+            raise AccountNotFoundError(f"Account '{tx.account_id}' does not exist")
 
         account = self.get_account(tx.account_id)
         assert account is not None  # for type checkers; guarded above
@@ -49,7 +50,7 @@ class Ledger:
         elif tx.amount < 0:
             account.withdraw(abs(tx.amount))
         else:
-            raise ValueError("Transaction amount cannot be zero")
+            raise InvalidAmountError("Transaction amount cannot be zero")
 
         self.transactions.append(tx)
     
@@ -61,7 +62,7 @@ class Ledger:
         - Adds the transaction to the transaction list
         """
         if amount <= 0:
-            raise ValueError("Amount must be positive")
+            raise InvalidAmountError("Amount must be positive")
         
         trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=amount, timestamp=datetime.now(UTC))
         self.record_transaction(trxn)
@@ -70,13 +71,13 @@ class Ledger:
         
     def withdraw(self, account_id: str, amount: int | float) -> Transaction:
         """
-        Creates a transaction and converts amount to negative before passes it into the record_transaction method which:
+        Creates a transaction and converts the amount to negative before passing it into the record_transaction method which:
         - Verifies if an account_id has an active account
         - Determines whether to deposit or withdraw the amount by its value
         - Adds the transaction to the transaction list
         """ 
         if amount <= 0:
-            raise ValueError("Amount must be positive")
+            raise InvalidAmountError("Amount must be positive")
         
         trxn = Transaction(tx_id=str(uuid4()), account_id=account_id, amount=-amount, timestamp=datetime.now(UTC))
         self.record_transaction(trxn)
@@ -87,25 +88,55 @@ class Ledger:
         """Returns account balance if the account exists"""
         account = self.get_account(account_id)
         if account is None:
-            raise ValueError(f"Account {account_id} does not exist")
+            raise AccountNotFoundError(f"Account {account_id} does not exist")
         
         return account.balance
     
     def transfer(self, from_id: str, to_id: str, amount: int | float) -> tuple[Transaction, Transaction]:
         """Transfer a positive amount from one account to another; returns (withdraw_tx, deposit_tx)."""
         if amount <= 0:
-            raise ValueError("Amount must be positive")
+            raise InvalidAmountError("Amount must be positive")
         if from_id == to_id:
             raise ValueError("Source and destination must be different")
         if self.get_account(from_id) is None:
-            raise ValueError(f"Account '{from_id}' does not exist")
+            raise AccountNotFoundError(f"Account '{from_id}' does not exist")
         if self.get_account(to_id) is None:
-            raise ValueError(f"Account '{to_id}' does not exist")
+            raise AccountNotFoundError(f"Account '{to_id}' does not exist")
         
         from_trxn = self.withdraw(from_id, amount)
         to_trxn = self.deposit(to_id, amount)
         
         return (from_trxn, to_trxn)
     
+    def transactions_for(self, account_id: str) -> list[Transaction]:
+        """Returns an accounts list of transactions in the order of record."""
+        if not self.has_account(account_id):
+            raise AccountNotFoundError(f"Account {account_id!r} does not exist")
+        
+        acct_trxns: list[Transaction] = []
+        for tx in self.transactions:
+            if tx.account_id == account_id:
+                acct_trxns.append(tx)
+        
+        return acct_trxns
+    
+    def list_accounts(self) -> list[str]:
+        """Return all account IDs (sorted)."""
+        return sorted(self._accounts)
+    
+    def transactions_between(self, account_id: str, start: datetime, end: datetime) -> list[Transaction]:
+        """Return transactions for this account between start and end (inclusive)."""
+        if start > end:
+            raise ValueError("Start must be <= end")
+        
+        acct_trxns = self.transactions_for(account_id)
+        trxns_in_date_range: list[Transaction] = []
+        
+        for tx in acct_trxns:
+            if start <= tx.timestamp <= end:
+                trxns_in_date_range.append(tx)
+        
+        return trxns_in_date_range
+
     def __repr__(self) -> str:
         return f"Ledger(accounts={len(self._accounts)}, transactions={len(self.transactions)})"

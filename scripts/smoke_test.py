@@ -1,16 +1,11 @@
-from datetime import datetime, UTC
-from bank_ledger import Ledger, Account, Transaction
+from bank_ledger import Account, Ledger, Transaction
+from datetime import datetime, UTC, timedelta
 
-ledger = Ledger()
-acct = Account(id="acct-001", name="Checking")
-ledger.add_account(acct)
+now = datetime.now(UTC)
+l = Ledger()
+l.add_account(Account("A", balance=0))
+l.deposit("A", 10)  # now-ish
 
-# Deposit 100
-t1 = Transaction(tx_id="tx-001", account_id="acct-001", amount=100, timestamp=datetime.now(UTC))
-ledger.record_transaction(t1)
-
-# Withdraw 40
-t2 = Transaction(tx_id="tx-002", account_id="acct-001", amount=-40, timestamp=datetime.now(UTC))
-ledger.record_transaction(t2)
-
-print("Balance:", ledger.get_account("acct-001").balance)  # -> 60
+start = now - timedelta(seconds=5)
+end = now + timedelta(seconds=5)
+print([tx.amount for tx in l.transactions_between("A", start, end)])  # -> [10]
