@@ -30,10 +30,6 @@ class Ledger:
         """Return True if an account with this ID exists."""
         return account_id in self._accounts
 
-    def __contains__(self, account_id: str) -> bool:
-        """Return True if an account with this ID exists."""
-        return self.has_account(account_id)
-
     def record_transaction(self, tx: Transaction) -> None:
         """Apply a Transaction to the matching Account and record it in history.
 
@@ -137,6 +133,30 @@ class Ledger:
                 trxns_in_date_range.append(tx)
         
         return trxns_in_date_range
+    
+    def summary(self) -> dict[str, object]:
+        """Return a snapshot summary: counts, per-account balances, and total balance."""
+        accounts: int = len(self._accounts)
+        transactions: int = len(self.transactions)
+        
+        balances: dict[str, float[int]] = {}
+        for acct_id, acct in self._accounts.items():
+            balances[acct_id] = acct.balance
+            
+        total_balance = 0.0
+        for balance in balances.values():
+            total_balance += balance
+        
+        return {
+            "accounts": accounts,
+            "transactions": transactions,
+            "balances": balances,
+            "total_balance": total_balance
+        }
+    
+    def __contains__(self, account_id: str) -> bool:
+        """Return True if an account with this ID exists."""
+        return self.has_account(account_id)
 
     def __repr__(self) -> str:
         return f"Ledger(accounts={len(self._accounts)}, transactions={len(self.transactions)})"
