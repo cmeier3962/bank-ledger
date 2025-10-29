@@ -18,6 +18,9 @@ class Transaction:
         self.amount = amount
         self.timestamp = timestamp
         
+    def to_dict(self) -> dict:
+        pass
+        
     def __repr__(self) -> str:
         return f"Transaction(tx_id={self.tx_id!r}, account_id={self.account_id!r}, amount={self.amount}, timestamp={self.timestamp.isoformat()!r})"
         
