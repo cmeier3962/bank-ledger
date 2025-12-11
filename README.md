@@ -53,9 +53,14 @@ This installs the package in **editable** mode so changes under `src/bank_ledger
 
 ## Quick check
 
-Run the module:
+Run using CLI:
 ```bash
 python -m bank_ledger
+```
+
+Run using GUI:
+```bash
+python -m bank_ledger.gui
 ```
 
 Run the smoke script:
